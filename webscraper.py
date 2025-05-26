@@ -1,20 +1,19 @@
 import requests
 from bs4 import BeautifulSoup
 
-def scrape():
-    
-    url = 'https://www.example.com'
-    response = requests.get(url)
-    soup = BeautifulSoup(response.text, 'html.parser')
-    print(soup)
+"""
+This function takes in a list of stock tags.
+It will then search through the finviz website to find the current prices of those stocks.
+"""
 
-    title = soup.select_one('h1').text
-    text = soup.select_one('p').text
-    link = soup.select_one('a').get('href')
-
-    print(title)
-    print(text)
-    print(link)
+def scrape(stocks):
+    for stock in stocks:
+        url = "https://finviz.com/quote.ashx?t=" + stock +"&p=d"
+        response = requests.get(url, headers = {'User-Agent':'Mozilla/5.0'})
+        if (response.status_code == 200):
+            soup = BeautifulSoup(response.text, 'html.parser')
+            price = soup.find('strong', {'class': "quote-price_wrapper_price"})
+            print(price.text)
 
 if __name__ == '__main__':
-    scrape()
+    scrape(["NVDA", "BA"])
